@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:sam": "sam build",
+    "validate": "sam validate",
+    "deploy": "sam deploy --config-env dev  --no-confirm-changeset",
+    "delete": "sam delete  --no-prompts"
   },
   "dependencies": {
     "react": "^18.3.1",
