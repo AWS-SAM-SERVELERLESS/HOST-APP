@@ -39,21 +39,22 @@ jobs:
             exit 1
           fi
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: ./dist/**
+      - name: Save build artifacts
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/build
+          mv ./dist/* $GITHUB_WORKSPACE/build/
 
   # Job para el despliegue a S3
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Restore build artifacts
+        run: |
+          mv $GITHUB_WORKSPACE/build/* ./dist/
 
       - name: List files before deploying
         run: |
@@ -61,7 +62,7 @@ jobs:
           ls -la
           echo "Listing files in dist directory before deploy:"
           ls -la ./dist
-          
+
       - name: Deploy to S3
         run: |
           aws s3 sync ./dist s3://sam-front-dev-react-app-bucket-dev --delete
