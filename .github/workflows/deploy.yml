@@ -32,6 +32,13 @@ jobs:
       - name: Build React app
         run: npm run build
 
+      - name: List files after build
+        run: |
+          echo "Listing files in the current directory:"
+          ls -la
+          echo "Listing files in dist directory:"
+          ls -la ./dist
+
       - name: Verify dist folder exists
         run: |
           if [ ! -d "./dist" ]; then
