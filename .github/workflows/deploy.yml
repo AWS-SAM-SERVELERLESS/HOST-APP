@@ -32,13 +32,6 @@ jobs:
       - name: Build React app
         run: npm run build
 
-      - name: List files after build
-        run: |
-          echo "Listing files in the current directory:"
-          ls -la
-          echo "Listing files in dist directory:"
-          ls -la ./dist
-
       - name: Verify dist folder exists
         run: |
           if [ ! -d "./dist" ]; then
@@ -50,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
-          path: ./dist
+          path: ./dist/**
 
   # Job para el despliegue a S3
   deploy:
@@ -68,7 +61,7 @@ jobs:
           ls -la
           echo "Listing files in dist directory before deploy:"
           ls -la ./dist
-
+          
       - name: Deploy to S3
         run: |
           aws s3 sync ./dist s3://sam-front-dev-react-app-bucket-dev --delete
