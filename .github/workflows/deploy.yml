@@ -60,7 +60,7 @@ jobs:
           echo "Listing files in the current directory before deploy:"
           ls -la
           echo "Listing files in dist directory before deploy:"
-          ls -la ./dist
+          ls -la 
 
       - name: Deploy to S3
         run: |
