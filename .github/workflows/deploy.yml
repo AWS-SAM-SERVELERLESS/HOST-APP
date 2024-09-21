@@ -62,6 +62,13 @@ jobs:
         with:
           name: build-artifacts
 
+      - name: List files before deploying
+        run: |
+          echo "Listing files in the current directory before deploy:"
+          ls -la
+          echo "Listing files in dist directory before deploy:"
+          ls -la ./dist
+
       - name: Deploy to S3
         run: |
           aws s3 sync ./dist s3://sam-front-dev-react-app-bucket-dev --delete
