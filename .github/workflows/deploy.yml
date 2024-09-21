@@ -39,22 +39,21 @@ jobs:
             exit 1
           fi
 
-      - name: Save build artifacts
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/build
-          mv ./dist/* $GITHUB_WORKSPACE/build/
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./dist/**
 
   # Job para el despliegue a S3
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Restore build artifacts
-        run: |
-          mv $GITHUB_WORKSPACE/build/* ./dist/
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
 
       - name: List files before deploying
         run: |
