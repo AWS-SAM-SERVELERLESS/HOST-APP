@@ -1,4 +1,4 @@
-name: Deploy React App to S3
+name: Build and Deploy React App to S3
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - main
 
 jobs:
+  # Job para build y test
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,16 +32,37 @@ jobs:
       - name: Build React app
         run: npm run build
 
-      - name: Verify dist folder exists
+      - name: Verify build folder exists
         run: |
-          if [ ! -d "./dist" ]; then
-            echo "dist folder does not exist."
+          if [ ! -d "./build" ]; then
+            echo "Build folder does not exist."
             exit 1
           fi
 
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: ./build
+
+  # Job para el despliegue a S3
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifacts
+
       - name: Deploy to S3
         run: |
-          aws s3 sync ./dist s3://sam-front-dev-react-app-bucket-dev --delete
+          aws s3 sync ./build s3://sam-front-dev-react-app-bucket-dev --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
