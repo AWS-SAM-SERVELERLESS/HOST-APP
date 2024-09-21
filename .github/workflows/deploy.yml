@@ -1,4 +1,4 @@
-name: Deploy React App to S3
+name: Build and Deploy React App to S3
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - main
 
 jobs:
+  # Job para build
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
           node-version: '20'
 
       - name: Cache Node.js modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
@@ -38,6 +38,22 @@ jobs:
             echo "dist folder does not exist."
             exit 1
           fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./dist
+
+  # Job para el despliegue a S3
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
 
       - name: Deploy to S3
         run: |
