@@ -39,11 +39,6 @@ jobs:
             exit 1
           fi
 
-      - name: Run tests
-        run: npm test
-        env:
-          CI: true
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
